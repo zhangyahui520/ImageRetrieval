@@ -1,0 +1,49 @@
+# retrieval settings
+
+datasets:
+  # number of images in a batch.
+  batch_size: 16
+
+  # function for stacking images in a batch.
+  collate_fn:
+    name: "CollateFn"  # name of the collate_fn.
+
+  # function for loading images.
+  folder:
+    name: "Folder"  # name of the folder.
+
+  # a list of data augmentation functions.
+  transformers:
+    names: ["PadResize", "ToTensor", "Normalize"]  # names of transformers.
+    PadResize:
+      size: 224  # target size of the longer edge.
+    Normalize:
+          mean: [0.5, 0.5, 0.5]
+          std: [0.5, 0.5, 0.5]
+#      mean: [0.485, 0.456, 0.406]
+#      std: [0.229, 0.224, 0.225]
+
+model:
+  name: "resnet50"  # name of the model.
+  resnet50:
+    load_checkpoint: "torchvision://resnet50"  # path of the model checkpoint. If it is started with "torchvision://", the model will be loaded from torchvision.
+
+extract:
+  # way to assemble features if transformers produce multiple images (e.g. TwoFlip, TenCrop). 0 means concat these features and 1 means sum these features.
+  assemble: 0
+
+  # function for assigning output features.
+  extractor:
+    name: "ResSeries"  # name of the extractor.
+    ResSeries:
+      extract_features: ["pool5"]  # name of the output feature map. If it is ["all"], then all available features will be output.
+
+  # function for splitting the output features (e.g. PCB).
+  splitter:
+    name: "Identity"  # name of the function for splitting features.
+
+  # a list of pooling functions.
+  aggregators:
+    names: ["GeM"]  # names of aggregators.
+
+
